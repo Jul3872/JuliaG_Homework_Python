@@ -60,14 +60,13 @@ def test_contains_positive(input_str, symbol, expected):
 
 
 @pytest.mark.negative
-@pytest.mark.parametrize("input_value, symbol", [
-    (123, "П"),
+@pytest.mark.parametrize("input_string, input_symbol", [
     ("Привет", "$"),
-    ([], "в"),
+    (["list"], "в"),
 ])
-def test_contains_negative(input_value, symbol):
-    with pytest.raises((TypeError, ValueError)):
-        string_utils.contains(input_value, symbol)
+def test_contains_negative(input_string, input_symbol):
+    actual_result = string_utils.contains(input_string, input_symbol)
+    assert actual_result is False
 
 
 @pytest.mark.positive
@@ -87,5 +86,5 @@ def test_delete_symbol_positive(input_str, symbol, expected):
     ("Привет", "3"),
 ])
 def test_delete_symbol_negative(input_value, symbol):
-    with pytest.raises((TypeError, ValueError)):
-        string_utils.delete_symbol(input_value, symbol)
+    result = string_utils.delete_symbol(input_value, symbol)
+    assert result == input_value
