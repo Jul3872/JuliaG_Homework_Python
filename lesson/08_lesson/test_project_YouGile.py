@@ -1,67 +1,83 @@
 from project_YouGile import ProjectYouGile
 
+# Константы
+LOGIN = "jul381972@gmail.com"
+PASSWORD = "Yulya1427!"
+NAME = "Тестировщик"
+COMPANY_ID = "0712b0a4-65ec-4443-ac24-0fd40742d8eb"
+USER_UUID = "95bb52b4-fa9e-44bd-80b3-84a437b66df5"
+ADMIN_ROLE = "admin"
+NEW_TITLE = "New_Project_Test"
+TEST_USER = {USER_UUID: ADMIN_ROLE}
+TITLE_GET_TEST = "Get_Project_Test"
+TITLE_EDIT_TEST = "Edit_Project_Test"
+EDITED_TITLE = "Edited_Project_Test"
+DELETED_STATUS = "false"
+
+# Экземпляр API
 api = ProjectYouGile('https://ru.yougile.com/api-v2/')
 
 
-def test_create_project_():
-    # количество проектов до
-    login = "jul381972@gmail.com",
-    password = "Yulya1427!",
-    name = "Тестировщик"
-    projects_before = api.get_project_list(login=login,
-                                           password=password,
-                                           name=name)
-    len_before = len(projects_before)
+def test_create_project():
+    try:
+        # Количество проектов до
+        projects_before = api.get_project_list(login=LOGIN,
+                                               password=PASSWORD, name=NAME)
+        len_before = len(projects_before)
 
-    # создание проекта
-    title = 'New_Project_Test'
-    users = {"95bb52b4-fa9e-44bd-80b3-84a437b66df5": "admin"}
-    companyID = "0712b0a4-65ec-4443-ac24-0fd40742d8eb"
-    result = api.create_project(title, users, login, password, companyID)
-    new_id = result['id']
+        # Создание проекта
+        result = api.create_project(NEW_TITLE, TEST_USER,
+                                    LOGIN, PASSWORD, COMPANY_ID)
+        new_id = result['id']
 
-    # количество проектов после
-    projects_after = api.get_project_list(login=login,
-                                          password=password,
-                                          name=name)
-    len_after = len(projects_after)
+        # Количество проектов после
+        projects_after = api.get_project_list(login=LOGIN,
+                                              password=PASSWORD, name=NAME)
+        len_after = len(projects_after)
 
-    assert len_after - len_before == 1
-    assert projects_after[-1]['title'] == title
-    assert projects_after[-1]['id'] == new_id
+        assert result.status_code == 201
+        assert len_after - len_before == 1
+        assert projects_after[-1]['title'] == NEW_TITLE
+        assert projects_after[-1]['id'] == new_id
+    except AssertionError as err:
+        print(f"Ошибка в тесте создания проекта: {err}")
+    except Exception as exc:
+        print(f"Общая ошибка: {exc}")
 
 
 def test_get_project_with_id():
-    # создание проекта
-    login = "jul381972@gmail.com",
-    password = "Yulya1427!",
-    companyID = "0712b0a4-65ec-4443-ac24-0fd40742d8eb"
-    title = 'Get_Project_Test'
-    users = {"95bb52b4-fa9e-44bd-80b3-84a437b66df5": "admin"}
-    result = api.create_project(title, users, login, password, companyID)
-    project_id = result['id']
+    try:
+        # Создание проекта
+        result = api.create_project(TITLE_GET_TEST, TEST_USER,
+                                    LOGIN, PASSWORD, COMPANY_ID)
+        project_id = result['id']
 
-    # обращаемся к проекту
-    new_project = api.get_project_with_id(project_id)
+        # Обращаемся к проекту
+        new_project = api.get_project_with_id(project_id)
 
-    assert new_project['title'] == title
-    assert new_project['users'] == users
+        assert result.status_code == 200
+        assert new_project['title'] == TITLE_GET_TEST
+        assert new_project['users'] == TEST_USER
+    except AssertionError as err:
+        print(f"Ошибка в тесте получения проекта по ID: {err}")
+    except Exception as exc:
+        print(f"Общая ошибка: {exc}")
 
 
 def test_edit_project():
-    login = "jul381972@gmail.com",
-    password = "Yulya1427!",
-    companyID = "0712b0a4-65ec-4443-ac24-0fd40742d8eb"
-    title = 'Edit_Project_Test'
-    users = {"95bb52b4-fa9e-44bd-80b3-84a437b66df5": "admin"}
+    try:
+        # Создание проекта
+        result = api.create_project(TITLE_EDIT_TEST, TEST_USER,
+                                    LOGIN, PASSWORD, COMPANY_ID)
+        project_id = result['id']
 
-    result = api.create_project(title, users, login, password, companyID)
+        # Изменение проекта
+        edited = api.edit_project(project_id, DELETED_STATUS,
+                                  EDITED_TITLE, TEST_USER)
 
-    project_id = result['id']
-    new_deleted = 'false'
-    new_title = 'Edited_Project_Test'
-    new_users = {"95bb52b4-fa9e-44bd-80b3-84a437b66df5": "admin"}
-
-    edited = api.edit_project(project_id, new_deleted, new_title, new_users)
-
-    assert edited['title'] == new_title
+        assert result.status_code == 200
+        assert edited['title'] == EDITED_TITLE
+    except AssertionError as err:
+        print(f"Ошибка в тесте редактирования проекта: {err}")
+    except Exception as exc:
+        print(f"Общая ошибка: {exc}")

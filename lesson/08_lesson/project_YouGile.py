@@ -25,7 +25,7 @@ class ProjectYouGile:
             "companyID": companyID
         }
         resp = requests.post(self.url + 'auth/keys', json=payload)
-        return resp.json()
+        return resp.json()['key']
 
     # Добавить компанию:
     def create_project(self, title, users, login, password, companyID):
@@ -33,7 +33,8 @@ class ProjectYouGile:
                              password=password, companyID=companyID)
         headers = {
             'Authorization': f'Bearer {key}',
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json; charset=utf-8',
+            'Accept': 'application/json; charset=utf-8'
         }
         project = {
             "title": title,
@@ -45,21 +46,27 @@ class ProjectYouGile:
         return resp.json()
 
         # Получить проект по id
-    def get_project_with_id(self, project_id):
-        key = self.get_token()
+    def get_project_with_id(self, project_id, login, password, companyID):
+        key = self.get_token(login=login,
+                             password=password, companyID=companyID)
         headers = {
-            'Authorization': f'Bearer {key}'
+            'Authorization': f'Bearer {key}',
+            'Content-Type': 'application/json; charset=utf-8',
+            'Accept': 'application/json; charset=utf-8'
         }
         resp = requests.get(self.url + f'projects/{project_id}',
                             headers=headers)
         return resp.json()
 
     # Изменить название проекта
-    def edit_project(self, project_id, new_deleted, new_title, new_users):
-        key = self.get_token()
+    def edit_project(self, project_id, new_deleted, new_title,
+                     new_users, login, password, companyID):
+        key = self.get_token(login=login,
+                             password=password, companyID=companyID)
         headers = {
             'Authorization': f'Bearer {key}',
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json; charset=utf-8',
+            'Accept': 'application/json; charset=utf-8'
         }
         project = {
             "deleted": new_deleted,
