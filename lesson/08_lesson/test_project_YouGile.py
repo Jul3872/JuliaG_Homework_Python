@@ -13,12 +13,15 @@ TITLE_GET_TEST = "Get_Project_Test"
 TITLE_EDIT_TEST = "Edit_Project_Test"
 EDITED_TITLE = "Edited_Project_Test"
 DELETED_STATUS = "false"
+NEW_TITLE_NEGATIV = ""
+USER_UUID_NEGATIV = "95bb52b4-fa9e-44bd-80b3-84a437b66df"
+TEST_USER_NEGATIV = {USER_UUID_NEGATIV: ADMIN_ROLE}
 
 # Экземпляр API
 api = ProjectYouGile('https://ru.yougile.com/api-v2/')
 
 
-def test_create_project():
+def test_create_project_positiv():
     try:
         # Количество проектов до
         projects_before = api.get_project_list(login=LOGIN,
@@ -45,7 +48,31 @@ def test_create_project():
         print(f"Общая ошибка: {exc}")
 
 
-def test_get_project_with_id():
+def test_create_project_negativ():
+    try:
+        # Количество проектов до
+        projects_before = api.get_project_list(login=LOGIN,
+                                               password=PASSWORD, name=NAME)
+        len_before = len(projects_before)
+
+        # Создание проекта с пустым названием
+        result = api.create_project(NEW_TITLE_NEGATIV, TEST_USER,
+                                    LOGIN, PASSWORD, COMPANY_ID)
+
+        # Количество проектов после
+        projects_after = api.get_project_list(login=LOGIN,
+                                              password=PASSWORD, name=NAME)
+        len_after = len(projects_after)
+
+        assert result.status_code == 400
+        assert len_after - len_before == 0
+    except AssertionError as err:
+        print(f"Ошибка в тесте создания проекта: {err}")
+    except Exception as exc:
+        print(f"Общая ошибка: {exc}")
+
+
+def test_get_project_with_id_positiv():
     try:
         # Создание проекта
         result = api.create_project(TITLE_GET_TEST, TEST_USER,
@@ -55,7 +82,7 @@ def test_get_project_with_id():
         # Обращаемся к проекту
         new_project = api.get_project_with_id(project_id)
 
-        assert result.status_code == 200
+        assert new_project.status_code == 200
         assert new_project['title'] == TITLE_GET_TEST
         assert new_project['users'] == TEST_USER
     except AssertionError as err:
@@ -64,7 +91,23 @@ def test_get_project_with_id():
         print(f"Общая ошибка: {exc}")
 
 
-def test_edit_project():
+def test_get_project_with_id_negativ():
+    try:
+        # Создание проекта
+        api.create_project(TITLE_GET_TEST, TEST_USER,
+                           LOGIN, PASSWORD, COMPANY_ID)
+
+        # Обращаемся к проекту без указания id проекта
+        new_project = api.get_project_with_id()
+
+        assert new_project.status_code == 401
+    except AssertionError as err:
+        print(f"Ошибка в тесте получения проекта по ID: {err}")
+    except Exception as exc:
+        print(f"Общая ошибка: {exc}")
+
+
+def test_edit_project_positiv():
     try:
         # Создание проекта
         result = api.create_project(TITLE_EDIT_TEST, TEST_USER,
@@ -75,8 +118,26 @@ def test_edit_project():
         edited = api.edit_project(project_id, DELETED_STATUS,
                                   EDITED_TITLE, TEST_USER)
 
-        assert result.status_code == 200
+        assert edited.status_code == 200
         assert edited['title'] == EDITED_TITLE
+    except AssertionError as err:
+        print(f"Ошибка в тесте редактирования проекта: {err}")
+    except Exception as exc:
+        print(f"Общая ошибка: {exc}")
+
+
+def test_edit_project_negativ():
+    try:
+        # Создание проекта
+        result = api.create_project(TITLE_EDIT_TEST, TEST_USER,
+                                    LOGIN, PASSWORD, COMPANY_ID)
+        project_id = result['id']
+
+        # Попытка змененить проект с неверным идентификатором роли
+        edited = api.edit_project(project_id, DELETED_STATUS,
+                                  EDITED_TITLE, TEST_USER_NEGATIV)
+
+        assert edited.status_code == 404
     except AssertionError as err:
         print(f"Ошибка в тесте редактирования проекта: {err}")
     except Exception as exc:
