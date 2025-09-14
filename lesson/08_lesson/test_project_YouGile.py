@@ -1,21 +1,9 @@
 from project_YouGile import ProjectYouGile
+from test_data import (LOGIN, PASSWORD, COMPANY_ID, NEW_TITLE,
+                       TEST_USER, TITLE_GET_TEST, TITLE_EDIT_TEST,
+                       EDITED_TITLE, DELETED_STATUS, NEW_TITLE_NEGATIVE,
+                       TEST_USER_NEGATIVE)
 
-# Константы
-LOGIN = "jul381972@gmail.com"
-PASSWORD = "Yulya1427!"
-NAME = "Тестировщик"
-COMPANY_ID = "0712b0a4-65ec-4443-ac24-0fd40742d8eb"
-USER_UUID = "95bb52b4-fa9e-44bd-80b3-84a437b66df5"
-ADMIN_ROLE = "admin"
-NEW_TITLE = "New_Project_Test"
-TEST_USER = {USER_UUID: ADMIN_ROLE}
-TITLE_GET_TEST = "Get_Project_Test"
-TITLE_EDIT_TEST = "Edit_Project_Test"
-EDITED_TITLE = "Edited_Project_Test"
-DELETED_STATUS = False
-NEW_TITLE_NEGATIVE = ""
-USER_UUID_NEGATIVE = "95bb52b4-fa9e-44bd-80b3-84a437b66df"
-TEST_USER_NEGATIVE = {USER_UUID_NEGATIVE: ADMIN_ROLE}
 
 # Экземпляр API
 api = ProjectYouGile('https://ru.yougile.com/api-v2/',
@@ -39,6 +27,10 @@ def test_create_project_positive():
     assert len_after - len_before == 1
     assert projects_after[-1]['title'] == NEW_TITLE
     assert projects_after[-1]['id'] == new_id
+
+    # Очистка данных после теста
+    api.edit_project(new_id, True,
+                     NEW_TITLE, TEST_USER)
 
 
 def test_create_project_negative():
