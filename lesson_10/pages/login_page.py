@@ -20,6 +20,8 @@ class LoginPage:
     def load(self):
         """
         Загрузка главной страницы сайта
+
+        :return: None
         """
         self.driver.get("https://www.saucedemo.com/")
 
@@ -31,6 +33,8 @@ class LoginPage:
         :param username: str - имя пользователя
 
         :param password: str - пароль
+
+        :return: None
         """
         with allure.step(f"Ввод имени пользователя: {username}"):
             user_input = self.driver.find_element(*self.username_field)
@@ -44,6 +48,8 @@ class LoginPage:
     def click_login(self):
         """
         Инициация процесса авторизации путем нажатия кнопки входа
+
+        :return: None
         """
         with allure.step("Поиск кнопки Login"):
             btn = self.driver.find_element(*self.login_button)
@@ -55,6 +61,8 @@ class LoginPage:
     def wait_for_homepage(self):
         """
         Ожидание изменения url страницы
+
+        :return: None
         """
         with allure.step("Ожидание URL, содержащего '/inventory.html'"):
             WebDriverWait(self.driver, 10).until(

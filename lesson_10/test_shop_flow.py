@@ -40,6 +40,8 @@ class TestShopFlow:
         5. Проверка корректности итоговой суммы
 
         :param browser: str - Объект браузера из фикстуры
+
+        :return: None
         """
 
         login_page = LoginPage(browser)

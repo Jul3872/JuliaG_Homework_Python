@@ -2,6 +2,7 @@ import allure
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+import re
 
 
 class CheckoutPage:
@@ -57,6 +58,8 @@ class CheckoutPage:
     def get_total_amount(self):
         """
         Получение и проверка суммы заказа
+
+        :return: float
         """
         with allure.step("Ожидание отображения общей суммы заказа"):
             total_element = WebDriverWait(self.driver, 10).until(
@@ -66,11 +69,11 @@ class CheckoutPage:
         with allure.step("Извлечение текста с суммой"):
             total_text = total_element.text
 
-        with allure.step("Преобразование суммы в числовой формат"):
-            total_amount_str = total_text.replace("Total: $", "").strip()
-            try:
-                total_amount_float = float(total_amount_str)
-                return total_amount_float
-            except ValueError:
-                raise Exception(f"Не удалось преобразовать'{total_amount_str}'"
-                                " в число.")
+        with allure.step("Преобразование текста в число"):
+            # Избавляемся от всех символов, кроме чисел и десятичной точки
+            cleaned_text = re.sub(r'[^\d\.]', '', total_text)
+            # Преобразуем в вещественное число
+            total_amount = float(cleaned_text)
+
+        with allure.step("Возврат суммы заказа"):
+            return total_amount

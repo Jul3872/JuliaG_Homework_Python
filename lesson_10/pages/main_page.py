@@ -22,6 +22,8 @@ class MainPage:
     def add_items_to_cart(self):
         """
         Добавление товаров в корзину
+
+        :return: None
         """
         with allure.step("Добавление рюкзака 'Sauce Labs Backpack' в корзину"):
             self.driver.find_element(*self.add_backpack_btn).click()
@@ -38,6 +40,8 @@ class MainPage:
     def go_to_cart(self):
         """
         Переход на страницу корзины путем нажатия по иконке корзины
+
+        :return: None
         """
         with allure.step("Нажатие на иконку корзины"):
             self.driver.find_element(*self.cart_icon).click()
